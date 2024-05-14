@@ -8,11 +8,13 @@ const DashboardPage = () => {
   const ref = useRef<HTMLInputElement>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploadMessage, setUploadMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!imageFile) return;
     try {
+      setLoading(true);
       const data = new FormData();
       data.set("file", imageFile);
       const res = await fetch("api/upload", {
@@ -29,6 +31,8 @@ const DashboardPage = () => {
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,7 +53,11 @@ const DashboardPage = () => {
               disabled={!imageFile}
               className="text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 m-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 cursor-pointer"
             >
-              Upload
+              {loading ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
+              ) : (
+                "Upload"
+              )}
             </button>
           </form>
           {uploadMessage && <p className="text-green-500">{uploadMessage}</p>}
